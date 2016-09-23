@@ -660,7 +660,7 @@ class DatatableQuery
     private  function customDistanceAndExpression(Query\Expr\Andx $andExpr, QueryBuilder $qb, $searchField, $searchValue, $i){
 
         $operator = substr($searchValue, 0, 2);
-        $searchValue = substr($searchValue, 2);
+        $searchValue = (int) substr($searchValue, 2);
 
         if($searchValue == '' ){
             return $andExpr;
