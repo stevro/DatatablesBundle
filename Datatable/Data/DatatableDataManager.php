@@ -11,6 +11,7 @@
 
 namespace Sg\DatatablesBundle\Datatable\Data;
 
+use Doctrine\ORM\EntityManager;
 use Sg\DatatablesBundle\Datatable\View\DatatableViewInterface;
 
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -74,6 +75,7 @@ class DatatableDataManager
      */
     private $locale;
 
+
     //-------------------------------------------------
     // Ctor.
     //-------------------------------------------------
@@ -122,7 +124,6 @@ class DatatableDataManager
     {
         $type = $datatableView->getAjax()->getType();
         $parameterBag = null;
-
         if ('GET' === strtoupper($type)) {
             $parameterBag = $this->request->query;
         }
@@ -142,7 +143,6 @@ class DatatableDataManager
             $this->doctrineExtensions,
             $this->locale
         );
-
         return $query;
     }
 }

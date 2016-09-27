@@ -164,19 +164,19 @@ class DatatableQuery
     /**
      * Ctor.
      *
-     * @param Serializer             $serializer
-     * @param array                  $requestParams
+     * @param Serializer $serializer
+     * @param array $requestParams
      * @param DatatableViewInterface $datatableView
-     * @param array                  $configs
-     * @param Twig_Environment       $twig
-     * @param boolean                $imagineBundle
-     * @param boolean                $doctrineExtensions
-     * @param string                 $locale
+     * @param array $configs
+     * @param Twig_Environment $twig
+     * @param boolean $imagineBundle
+     * @param boolean $doctrineExtensions
+     * @param string $locale
      *
      * @throws Exception
      */
     public function __construct(
-    Serializer $serializer, array $requestParams, DatatableViewInterface $datatableView, array $configs, Twig_Environment $twig, $imagineBundle, $doctrineExtensions, $locale
+        Serializer $serializer, array $requestParams, DatatableViewInterface $datatableView, array $configs, Twig_Environment $twig, $imagineBundle, $doctrineExtensions, $locale
     )
     {
         $this->serializer = $serializer;
@@ -238,7 +238,7 @@ class DatatableQuery
     /**
      * Cast search field.
      *
-     * @param string         $searchField
+     * @param string $searchField
      * @param AbstractColumn $column
      *
      * @return string
@@ -509,13 +509,14 @@ class DatatableQuery
      */
     private function setWhere(QueryBuilder $qb)
     {
-        $globalSearch = $this->requestParams['search']['value'];
+
+        $globalSearch = isset($this->requestParams['search']['value']) ?  $this->requestParams['search']['value'] : '';
 
         /* nima jmen */
         $qb->leftJoin('shipment.itinerary', 'lo', \Doctrine\ORM\Query\Expr\Join::WITH, 'lo.shipmentId = shipment.id AND lo.type= :loadingPoint ')
-                ->leftJoin('shipment.itinerary', 'un', \Doctrine\ORM\Query\Expr\Join::WITH, 'un.shipmentId = shipment.id AND un.type= :unloadingPoint ')
-                ->setParameter("loadingPoint", \Smart\Bundle\AdminBundle\Entity\Itinerary::LOADING_POINT)
-                ->setParameter('unloadingPoint', \Smart\Bundle\AdminBundle\Entity\Itinerary::UNLOADING_POINT);
+            ->leftJoin('shipment.itinerary', 'un', \Doctrine\ORM\Query\Expr\Join::WITH, 'un.shipmentId = shipment.id AND un.type= :unloadingPoint ')
+            ->setParameter("loadingPoint", \Smart\Bundle\AdminBundle\Entity\Itinerary::LOADING_POINT)
+            ->setParameter('unloadingPoint', \Smart\Bundle\AdminBundle\Entity\Itinerary::UNLOADING_POINT);
         /* end of jmen */
 
         // global filtering
@@ -657,12 +658,13 @@ class DatatableQuery
         return $this;
     }
 
-    private  function customDistanceAndExpression(Query\Expr\Andx $andExpr, QueryBuilder $qb, $searchField, $searchValue, $i){
+    private function customDistanceAndExpression(Query\Expr\Andx $andExpr, QueryBuilder $qb, $searchField, $searchValue, $i)
+    {
 
         $operator = substr($searchValue, 0, 2);
         $searchValue = substr($searchValue, 2);
 
-        if($searchValue == '' ){
+        if ($searchValue == '') {
             return $andExpr;
         }
 
@@ -701,12 +703,12 @@ class DatatableQuery
             $counter = count($this->requestParams['order']);
 
             for ($i = 0; $i < $counter; $i++) {
-                $columnIdx = (integer) $this->requestParams['order'][$i]['column'];
+                $columnIdx = (integer)$this->requestParams['order'][$i]['column'];
                 $requestColumn = $this->requestParams['columns'][$columnIdx];
 
                 if ('true' == $requestColumn['orderable']) {
                     $this->qb->addOrderBy(
-                            $this->orderColumns[$columnIdx], $this->requestParams['order'][$i]['dir']
+                        $this->orderColumns[$columnIdx], $this->requestParams['order'][$i]['dir']
                     );
                 }
             }
@@ -750,14 +752,14 @@ class DatatableQuery
         $this->setLeftJoins($qb);
         $this->setWhereAllCallback($qb);
 
-        return (int) $qb->getQuery()->getSingleScalarResult();
+        return (int)$qb->getQuery()->getSingleScalarResult();
     }
 
     /**
      * Query results after filtering.
      *
      * @param integer $rootEntityIdentifier
-     * @param bool    $buildQuery
+     * @param bool $buildQuery
      *
      * @return int
      */
@@ -772,18 +774,18 @@ class DatatableQuery
             $this->setWhere($qb);
             $this->setWhereAllCallback($qb);
 
-            return (int) $qb->getQuery()->getSingleScalarResult();
+            return (int)$qb->getQuery()->getSingleScalarResult();
         } else {
             $this
-                    ->qb
-                    ->setFirstResult(null)
-                    ->setMaxResults(null)
-                    ->select('count(distinct ' . $this->tableName . '.' . $rootEntityIdentifier . ')');
+                ->qb
+                ->setFirstResult(null)
+                ->setMaxResults(null)
+                ->select('count(distinct ' . $this->tableName . '.' . $rootEntityIdentifier . ')');
             if (true === $this->isPostgreSQLConnection) {
                 $this->qb->groupBy($this->tableName . '.' . $rootEntityIdentifier);
                 return count($this->qb->getQuery()->getResult());
             } else {
-                return (int) $this->qb->getQuery()->getSingleScalarResult();
+                return (int)$this->qb->getQuery()->getSingleScalarResult();
             }
         }
     }
@@ -801,15 +803,15 @@ class DatatableQuery
         if (true === $this->configs['translation_query_hints']) {
             if (true === $this->doctrineExtensions) {
                 $query->setHint(
-                        \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER, 'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+                    \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER, 'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
                 );
 
                 $query->setHint(
-                        \Gedmo\Translatable\TranslatableListener::HINT_TRANSLATABLE_LOCALE, $this->locale
+                    \Gedmo\Translatable\TranslatableListener::HINT_TRANSLATABLE_LOCALE, $this->locale
                 );
 
                 $query->setHint(
-                        \Gedmo\Translatable\TranslatableListener::HINT_FALLBACK, 1
+                    \Gedmo\Translatable\TranslatableListener::HINT_FALLBACK, 1
                 );
             } else {
                 throw new Exception('execute(): "DoctrineExtensions" does not exist.');
@@ -836,7 +838,7 @@ class DatatableQuery
      */
     public function getResponse($buildQuery = true, $outputWalkers = false)
     {
-        false === $buildQuery ? : $this->buildQuery();
+        false === $buildQuery ?: $this->buildQuery();
 
         $this->paginator = new Paginator($this->execute(), true);
         $this->paginator->setUseOutputWalkers($outputWalkers);
@@ -844,9 +846,9 @@ class DatatableQuery
         $formatter->runFormatter();
 
         $outputHeader = array(
-            'draw' => (int) $this->requestParams['draw'],
-            'recordsTotal' => (int) $this->getCountAllResults($this->rootEntityIdentifier),
-            'recordsFiltered' => (int) $this->getCountFilteredResults($this->rootEntityIdentifier, $buildQuery)
+            'draw' => (int)$this->requestParams['draw'],
+            'recordsTotal' => (int)$this->getCountAllResults($this->rootEntityIdentifier),
+            'recordsFiltered' => (int)$this->getCountFilteredResults($this->rootEntityIdentifier, $buildQuery)
         );
 
         $fullOutput = array_merge($outputHeader, $formatter->getOutput());
@@ -881,8 +883,8 @@ class DatatableQuery
      * Add search/order columns.
      *
      * @param integer $key
-     * @param string  $columnTableName
-     * @param string  $data
+     * @param string $columnTableName
+     * @param string $data
      */
     private function addSearchOrderColumn($key, $columnTableName, $data)
     {
@@ -942,8 +944,8 @@ class DatatableQuery
      *
      * @author Gaultier Boniface <https://github.com/wysow>
      *
-     * @param string|array       $association
-     * @param string             $key
+     * @param string|array $association
+     * @param string $key
      * @param ClassMetadata|null $metadata
      *
      * @return ClassMetadata
@@ -1053,8 +1055,6 @@ class DatatableQuery
     {
         return $this->imagineBundle;
     }
-
-
 
 
 }

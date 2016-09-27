@@ -59,6 +59,7 @@
                                 if ('bootstrap' == oTable.context[0].renderer) {
                                     oTable.buttons().container().appendTo('#' + oTable.table().container().id + ' .col-sm-6:eq(0)');
                                 }
+                                console.log( $.fn.DataTable.isDataTable("#shipment_datatable"));
 
                                 if ('foundation' == oTable.context[0].renderer) {
                                     oTable.buttons().container().appendTo('#' + oTable.table().container().id + ' .small-6.columns:eq(0)');

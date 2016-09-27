@@ -35,3 +35,4 @@ services:
             - '@twig'
             - '%sg_datatables.datatable.query%'
             - '%kernel.bundles%'
+
