@@ -32,7 +32,7 @@
            style="{% if column.width %} width:{{ column.width }};{% endif %}"
            placeholder="{{ column.title|striptags|trim }}"
            data-filter-property-id="{{ filterColumnId }}"
-           {% if column.name %}name="{{ column.name }}"{% endif %} />
+           {% if column.name %}name="{{ column.name }}"{% endif %}  value="{{ column.filter.searchColumn}}"  />
     {% if true == column.filter.cancelButton %}
         {{ cancel_button_html }}
     {% endif %}
