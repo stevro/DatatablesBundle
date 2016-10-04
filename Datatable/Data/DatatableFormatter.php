@@ -49,6 +49,7 @@ class DatatableFormatter
         $lineFormatter = $this->datatableQuery->getLineFormatter();
 
         foreach ($paginator as $row) {
+
             // 1. Call the the lineFormatter to format row items
             if (is_callable($lineFormatter)) {
                 $row = call_user_func($lineFormatter, $row);

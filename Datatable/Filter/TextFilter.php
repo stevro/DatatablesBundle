@@ -70,7 +70,7 @@ class TextFilter extends AbstractFilter
             'cancel_button' => false
         ));
 
-        $resolver->setAllowedTypes('search_type', 'string');
+        $resolver->setAllowedTypes('search_type', 'string', 'integer');
         $resolver->setAllowedTypes('property', 'string');
         $resolver->setAllowedTypes('search_column', 'string');
         $resolver->setAllowedTypes('class', 'string');

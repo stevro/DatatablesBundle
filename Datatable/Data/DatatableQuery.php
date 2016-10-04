@@ -13,6 +13,7 @@ namespace Sg\DatatablesBundle\Datatable\Data;
 
 use Sg\DatatablesBundle\Datatable\View\DatatableViewInterface;
 use Sg\DatatablesBundle\Datatable\Column\AbstractColumn;
+use Smart\Bundle\AdminBundle\Model\Auction\BaseAuction;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -510,13 +511,16 @@ class DatatableQuery
     private function setWhere(QueryBuilder $qb)
     {
 
-        $globalSearch = isset($this->requestParams['search']['value']) ?  $this->requestParams['search']['value'] : '';
+        $globalSearch = isset($this->requestParams['search']['value']) ? $this->requestParams['search']['value'] : '';
 
         /* nima jmen */
         $qb->leftJoin('shipment.itinerary', 'lo', \Doctrine\ORM\Query\Expr\Join::WITH, 'lo.shipmentId = shipment.id AND lo.type= :loadingPoint ')
             ->leftJoin('shipment.itinerary', 'un', \Doctrine\ORM\Query\Expr\Join::WITH, 'un.shipmentId = shipment.id AND un.type= :unloadingPoint ')
+//            ->leftJoin('bids.itinerary', 'un', \Doctrine\ORM\Query\Expr\Join::WITH, 'un.shipmentId = shipment.id AND un.type= :unloadingPoint ')
             ->setParameter("loadingPoint", \Smart\Bundle\AdminBundle\Entity\Itinerary::LOADING_POINT)
             ->setParameter('unloadingPoint', \Smart\Bundle\AdminBundle\Entity\Itinerary::UNLOADING_POINT);
+
+
         /* end of jmen */
 
         // global filtering
@@ -610,8 +614,18 @@ class DatatableQuery
                             case 'winner':
                             case 'winner.driver_name':
                             case 'winner.truck':
-                                $andExpr = $filter->addAndExpression($andExpr, $qb, $searchField, $searchValue, $i);
-                                $andExpr->add($qb->expr()->eq('auction_bids.isWinner', 1));
+                                if ($searchValue === "false") {
+                                    $qb->innerJoin('shipment.auction', 'a');
+                                    $qb->innerJoin('a.bids', 'b');
+                                    $qb->where('b.truck is NULL');
+                                } elseif ($searchValue === "true") {
+                                    $qb->innerJoin('shipment.auction', 'a');
+                                    $qb->innerJoin('a.bids', 'b');
+                                    $qb->where('b.truck is NOT NULL');
+                                } else {
+                                    $andExpr = $filter->addAndExpression($andExpr, $qb, $searchField, $searchValue, $i);
+                                    $andExpr->add($qb->expr()->eq('auction_bids.isWinner', 1));
+                                }
                                 break;
                             case 'itinerary.loading.country':
                                 $andExpr = $filter->addAndExpression($andExpr, $qb, 'lo.country', $searchValue, $i);
@@ -640,7 +654,20 @@ class DatatableQuery
                             case 'itinerary.unloading.referenceNumber':
                                 $andExpr = $filter->addAndExpression($andExpr, $qb, 'un.referenceNumber', $searchValue, $i);
                                 break;
+                            case 'bids':
+                                $andExpr = $this->customBidsAndExpression($andExpr, $qb, 'auction.bids', $searchValue, $i);
+                                break;
+                            case 'auction.status':
+                                if (mb_strpos($searchValue, BaseAuction::DELIVERED) !== false ||
+                                    mb_strpos($searchValue, BaseAuction::CANCELLED) !== false ||
+                                    mb_strpos($searchValue, BaseAuction::NOT_DELIVERED) !== false) {
+                                    $qb->innerJoin('shipment.pallets', 'p')
+                                        ->innerJoin('shipment.truckType', 't')
+                                        ->leftJoin('shipment.palletType', 'pt');
+                                }
+                                $andExpr = $filter->addAndExpression($andExpr, $qb, $searchField, $searchValue, $i);
 
+                                break;
                             default:
                                 $andExpr = $filter->addAndExpression($andExpr, $qb, $searchField, $searchValue, $i);
                                 break;
@@ -687,6 +714,16 @@ class DatatableQuery
         }
 
         return $andExpr;
+    }
+
+    private function customBidsAndExpression(Query\Expr\Andx $andExpr, QueryBuilder $qb, $searchField, $searchValue, $i)
+    {
+
+        $qb->innerJoin('shipment.auction', 'a');
+        $qb->innerJoin('a.bids', 'b');
+        $andExpr->add($qb->expr()->gt(count('b.id'), 0));
+        return $andExpr;
+
     }
 
 
