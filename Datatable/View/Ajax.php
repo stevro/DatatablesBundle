@@ -43,6 +43,8 @@ class Ajax extends AbstractViewOptions
      */
     protected $pipeline;
 
+    protected $quick_search_selector;
+
     //-------------------------------------------------
     // OptionsInterface
     //-------------------------------------------------
@@ -55,12 +57,15 @@ class Ajax extends AbstractViewOptions
         $resolver->setDefaults(array(
             'url' => '',
             'type' => 'GET',
-            'pipeline' => 0
+            'pipeline' => 0,
+            'quick_search_selector'=>'quick_search_menu'
         ));
 
         $resolver->setAllowedTypes('url', 'string');
         $resolver->setAllowedTypes('type', 'string');
         $resolver->setAllowedTypes('pipeline', 'int');
+        $resolver->setAllowedTypes('quick_search_selector', 'string');
+
 
         $resolver->setAllowedValues('type', array('GET', 'POST', 'get', 'post'));
 
@@ -141,5 +146,14 @@ class Ajax extends AbstractViewOptions
     public function getPipeline()
     {
         return $this->pipeline;
+    }
+
+    public function setQuickSearchSelector($quick_search_selector)
+    {
+        $this->quick_search_selector = $quick_search_selector;
+    }
+
+    public function getQuickSearchSelector(){
+        return $this->quick_search_selector;
     }
 }

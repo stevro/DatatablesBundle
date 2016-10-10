@@ -1,31 +1,34 @@
 {% extends 'SgDatatablesBundle:Filters:filter.html.twig' %}
 
 {% block html %}
-    <select id="select-{{ selectorId }}"
-            class="{% if column.filter.class %} {{ column.filter.class }}{% endif %}"
-            style="{% if column.width %} width:{{ column.width }};{% endif %}"
-            {% if column.name %}name="{{ column.name }}"{% endif %}
+    <div class="form-inline">
+        <div class="form-group">
+            <select id="select-{{ selectorId }}" style=" float: left"
+                    class="{% if column.filter.class %} {{ column.filter.class }}{% endif %}"
+                    {% if column.name %}name="{{ column.name }}"{% endif %}
             >
-        {% for key, name in column.filter.selectOptions %}
-            {% if loop.first %}
-                <option value="{{ key }}" selected="selected">{{ name }}</option>
-            {% else %}
-                <option value="{{ key }}">{{ name }}</option>
-            {% endif %}
-        {% endfor %}
-    </select>
+                {% for key, name in column.filter.selectOptions %}
+                    {% if loop.first %}
+                        <option value="{{ key }}" selected="selected">{{ name }}</option>
+                    {% elseif  column.filter.searchColumn[:2] == key %}
+                        <option value="{{ key }}" selected="selected">{{ name }}</option>
+                    {% else %}
+                        <option value="{{ key }}">{{ name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+
+            <input type="text"
+                   id="text-{{ selectorId }}" style="width: 60%; float: right"
+                   class="{% if column.filter.class %} {{ column.filter.class }}{% endif %}"
+                   placeholder="{{ column.title|striptags|trim }}"
+                   value="{{ column.filter.searchColumn[2:] }}"
+                   {% if column.name %}name="{{ column.name }}"{% endif %} />
+        </div>
+    </div>
 
 
-    <input type="text"
-           id="text-{{ selectorId }}"
-           class="{% if column.filter.class %} {{ column.filter.class }}{% endif %}"
-           style="{% if column.width %} width:{{ column.width }};{% endif %}"
-           placeholder="{{ column.title|striptags|trim }}"
-
-           {% if column.name %}name="{{ column.name }}"{% endif %} />
-
-
-    <input type="text" style="display: none"
+    <input type="text" style="display: none" name="originalDistanceHidden"
            id="{{ tableId }}-sg-filter-{{ selectorId }}"
            class="individual_filtering{% if column.filter.class %} {{ column.filter.class }}{% endif %}"
            style="{% if column.width %} width:{{ column.width }};{% endif %}"
@@ -42,7 +45,6 @@
     <script type="text/javascript">
         try {
             $("#select-{{ selectorId }}").on('change', function () {
-                {#$('#{{ tableId }}-sg-filter-{{ selectorId }}').val('');#}
                 var option = $(this).val();
                 var text = $('#text-{{ selectorId }}').val();
                 var newVal = option + '' + text;
@@ -56,7 +58,6 @@
         try {
 
             $("#text-{{ selectorId }}").on('keyup click', function () {
-
                 var option = $('#select-{{ selectorId }}').val();
                 var text = $(this).val();
                 var newVal = option + '' + text;

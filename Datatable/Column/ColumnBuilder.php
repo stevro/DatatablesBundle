@@ -78,7 +78,6 @@ class ColumnBuilder implements ColumnBuilderInterface
         if (strpos($data, '\\') !== false) {
             $data = str_replace('\\', '\\\\', $data);
         }
-
         /**
          * @var AbstractColumn $column
          */
@@ -87,7 +86,6 @@ class ColumnBuilder implements ColumnBuilderInterface
         $column->setData($data);
         $column->setDql($data);
         $column->setupOptionsResolver($options);
-
         $addColumn = $column->isAddIfClosure();
 
         if (true === $addColumn) {

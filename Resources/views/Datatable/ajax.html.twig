@@ -11,11 +11,22 @@
     "ajax": $.fn.dataTable.pipeline({
         "url": "{{ view_ajax.url|raw }}",
         "method": "{{ view_ajax.type }}",
-        "pages": {{ view_ajax.pipeline }}
+        "pages": {{ view_ajax.pipeline }},
+        "data": function ( d ) {
+            return $.extend( {}, d, {
+                "quick_search": $('#{{ view_ajax.quickSearchSelector }}').find(':selected').val()
+            } );
+        }
     }),
 {% else %}
     "ajax": {
         "url": "{{ view_ajax.url|raw }}",
-        "type": "{{ view_ajax.type }}"
+        "type": "{{ view_ajax.type }}",
+        "data": function ( d ) {
+            return $.extend( {}, d, {
+                "quick_search": $('#{{ view_ajax.quickSearchSelector }}').find(':selected').val()
+            } );
+        }
     },
+
 {% endif %}

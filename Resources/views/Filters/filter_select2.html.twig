@@ -18,7 +18,8 @@
         data-filter-property-id="{{ filterColumnId }}"
     >
         {% for key, name in column.filter.selectOptions %}
-            <option value="{{ key }}">{{ name }}</option>
+            <option value="{{ key }}"
+            >{{ name }}</option>
         {% endfor %}
     </select>
     {% if true == column.filter.cancelButton %}
