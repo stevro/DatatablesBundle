@@ -40,8 +40,14 @@ class DateRangeFilter extends AbstractFilter
     public function addAndExpression(Andx $andExpr, QueryBuilder $pivot, $searchField, $searchValue, &$i)
     {
         list($_dateStart, $_dateEnd) = explode(' - ', $searchValue);
+        if(strtolower($_dateEnd) === "today")
+        {
+            $dateEnd = new \DateTime();
+        }else
+        {
+            $dateEnd = new \DateTime($_dateEnd);
+        }
         $dateStart = new \DateTime($_dateStart);
-        $dateEnd = new \DateTime($_dateEnd);
         $dateEnd->setTime(23, 59, 59);
 
         $andExpr = $this->getBetweenAndExpression($andExpr, $pivot, $searchField, $dateStart->format('Y-m-d H:i:s'), $dateEnd->format('Y-m-d H:i:s'), $i);

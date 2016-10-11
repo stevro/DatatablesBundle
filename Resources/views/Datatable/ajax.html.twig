@@ -28,5 +28,48 @@
             } );
         }
     },
+    {#"createdRow": function( row, data, dataIndex ) {#}
+
+    {#$(row).css({position: "relative"})#}
+    {#$(row).children().css({position: "relative"})#}
+    {#$(row).children().append("<div class='resizer'> </div>");#}
+
+    {#$(row).resizableTableColumns();#}
+
+    {#$(row).children().resizable({#}
+    {#resizeHeight: false,#}
+    {#handleSelector: "",#}
+    {#onDragStart: function (e, $el, opt) {#}
+    {#console.log("drag start");#}
+
+    {#if (!$(e.target).hasClass("resizer"))#}
+             {#return false;#}
+        {#return true;#}
+         {#}#}
+      {#});#}
+    {#},#}
+
+    {#onDrag: function (e, $el, opt) {#}
+    {#console.log("drag stop");#}
+
+    {#(function () {#}
+    {#console.log("drag stop");#}
+    {#var col_widths = [];#}
+    {#$(".dataTable").each(function (index, element) {#}
+    {#$(element).find("tr:first th, tr:first td").each(function (index2, element2) {#}
+          {#col_widths[index2] = Math.max(col_widths[index2] || 0, $(element2).width());#}
+          {#});#}
+    {#});#}
+
+    {#// Set each column in each table to the max width of that column across all tables.#}
+    {#$(".dataTable").each(function (index, element) {#}
+         {#$(element).find("tr:first th, tr:first td").each(function (index2, element2) {#}
+         {#$(element2).width(col_widths[index2]);#}
+             {#});#}
+         {#});#}
+    {#})();#}
+
+    {#AlignMultipleTables('dataTable')#}
+    {#}#}
 
 {% endif %}
