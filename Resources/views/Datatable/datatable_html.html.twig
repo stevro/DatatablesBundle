@@ -22,7 +22,9 @@
             {% if view_options.individualFiltering %}
             <tr>
                 {% for column in view_columns %}
-                    <td>
+                    <td> <div class="resizer">
+
+                        </div>
                         {% if column.searchable %}
                             {{ datatable_filter_render(datatable, column, loop.index0) }}
                         {% endif %}

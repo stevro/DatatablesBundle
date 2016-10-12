@@ -5,6 +5,7 @@
         <div class="form-group">
             <select id="select-{{ selectorId }}" style=" float: left"
                     class="{% if column.filter.class %} {{ column.filter.class }}{% endif %}"
+                    {#style="{% if column.width %} width:{{ column.width }};{% endif %}"#}
                     {% if column.name %}name="{{ column.name }}"{% endif %}
             >
                 {% for key, name in column.filter.selectOptions %}
@@ -21,6 +22,7 @@
             <input type="text"
                    id="text-{{ selectorId }}" style="width: 60%; float: right"
                    class="{% if column.filter.class %} {{ column.filter.class }}{% endif %}"
+                   {#style="{% if column.width %} width:{{ column.width }};{% endif %}"#}
                    placeholder="{{ column.title|striptags|trim }}"
                    value="{{ column.filter.searchColumn[2:] }}"
                    {% if column.name %}name="{{ column.name }}"{% endif %} />

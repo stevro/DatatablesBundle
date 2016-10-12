@@ -617,11 +617,16 @@ class DatatableQuery
                                 if ($searchValue === "false") {
                                     $qb->innerJoin('shipment.auction', 'a');
                                     $qb->innerJoin('a.bids', 'b');
-                                    $qb->where('b.truck is NULL');
+                                    $qb->andWhere('b.isWinner = 1');
+                                    $qb->andWhere('b.truck is NULL');
+                                    $qb->andWhere('b.driver is NULL');
                                 } elseif ($searchValue === "true") {
                                     $qb->innerJoin('shipment.auction', 'a');
                                     $qb->innerJoin('a.bids', 'b');
-                                    $qb->where('b.truck is NOT NULL');
+                                    $qb->andWhere('b.isWinner = 1');
+
+                                    $qb->andWhere('b.truck is NOT NULL');
+                                    $qb->andWhere('b.driver is NOT NULL');
                                 } else {
                                     $andExpr = $filter->addAndExpression($andExpr, $qb, $searchField, $searchValue, $i);
                                     $andExpr->add($qb->expr()->eq('auction_bids.isWinner', 1));
